@@ -129,10 +129,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # settings.py
 
-SMSC_LOGIN = "Shukhrat31"
-SMSC_PASSWORD = "9D38K8wqRzk@L5C"
-SMSC_SENDER = ""  # Если подключено имя отправителя
-
 
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': [
