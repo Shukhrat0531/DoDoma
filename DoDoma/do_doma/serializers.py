@@ -47,3 +47,37 @@ class User1LoginSerializer(serializers.Serializer):
             return data
         except User1.DoesNotExist:
             raise serializers.ValidationError("Пользователь с таким номером телефона не найден.")
+
+
+
+class UnitSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Unit
+        fields = ('name',)
+
+class ProductSerializer(serializers.ModelSerializer):
+    unit = serializers.StringRelatedField()
+
+    class Meta:
+        model = Product
+        fields = ('id', 'category', 'name', 'description', 'image1', 'price',
+                  'compound', 'storage', 'unit', 'country', 'discount', 'is_new')
+
+    def create(self, validated_data):
+        unit_data = validated_data.pop('unit', None)
+        if unit_data:
+            unit, created = Unit2.objects.get_or_create(name=unit_data)
+            validated_data['unit'] = unit
+        return Product2.objects.create(**validated_data)
+
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = '__all__'
+
+class PosterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Poster
+        fields = '__all__'
+
+
