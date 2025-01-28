@@ -1,10 +1,11 @@
 from django.urls import path
-from .views import User1RegistrationView, User1VerificationView,User1LoginView, CategoryAPIView,ProductAPIView, PosterAPIView,CheckPromocodeView
+from .views import *
 
 urlpatterns = [
     path('register/', User1RegistrationView.as_view(), name='user1_register'),
     path('verify/', User1VerificationView.as_view(), name='user1_verify'),
     path('login/', User1LoginView.as_view(), name='user1_login'),
+    path('reset-password/', ResetPasswordAPIView.as_view(), name='reset_password'),
 
     path('categories/', CategoryAPIView.as_view(), name='category-list'),
     path('categories/<int:pk>/', CategoryAPIView.as_view(), name='category-detail'),

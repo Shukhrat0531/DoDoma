@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import User1RegistrationSerializer, User1VerificationSerializer,User1LoginSerializer,CategorySerializer, ProductSerializer,PosterSerializer
+from .serializers import *
 from .models import *
 
 class User1RegistrationView(APIView):
@@ -26,7 +26,16 @@ class User1LoginView(APIView):
         if serializer.is_valid():
             return Response({"message": "Авторизация успешна"}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
+
+class ResetPasswordAPIView(APIView):
+    def post(self, request, *args, **kwargs):
+        serializer = ResetPasswordSerializer(data=request.data)
+        if serializer.is_valid():
+            response = serializer.reset_password()
+            return Response(response, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class CategoryAPIView(APIView):
     def get(self, request, pk=None):
