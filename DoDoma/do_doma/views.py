@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import User1RegistrationSerializer, User1VerificationSerializer,User1LoginSerializer,CategorySerializer, ProductSerializer,PosterSerializer
+from .serializers import *
 from .models import *
 
 class User1RegistrationView(APIView):
@@ -152,3 +152,65 @@ class ProductAPIView(APIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
         product.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+
+class CartAPIView(APIView):
+    def get(self, request, pk=None):
+        user_id = request.query_params.get('user_id', None)  # Получаем user_id из параметров запроса
+
+        if pk:
+            try:
+                cart = Cart.objects.get(pk=pk)
+            except Cart.DoesNotExist:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+            serializer = CartSerializer(cart)
+        elif user_id:
+            # Фильтрация корзин по user_id
+            carts = Cart.objects.filter(user_id=user_id)
+            if not carts.exists():
+                return Response(status=status.HTTP_404_NOT_FOUND)
+            serializer = CartSerializer(carts, many=True)
+        else:
+            carts = Cart.objects.all()
+            serializer = CartSerializer(carts, many=True)
+
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = CartSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request, pk):
+        try:
+            cart = Cart.objects.get(pk=pk)
+        except Cart.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        serializer = CartSerializer(cart, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        try:
+            cart = Cart.objects.get(pk=pk)
+        except Cart.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        cart.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class CheckPromocodeView(APIView):
+    def post(self, request, *args, **kwargs):
+        promocode_name = request.data.get('name')
+        try:
+            promocode = Promocode.objects.get(name=promocode_name, status=True)
+            serializer = PromocodeSerializer(promocode)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Promocode.DoesNotExist:
+            return Response({'error': 'Invalid promocode or inactive'}, status=status.HTTP_400_BAD_REQUEST)
+

@@ -1,5 +1,6 @@
 from django.urls import path
-from .views import User1RegistrationView, User1VerificationView,User1LoginView, CategoryAPIView,ProductAPIView, PosterAPIView,CheckPromocodeView
+from .views import *
+
 
 urlpatterns = [
     path('register/', User1RegistrationView.as_view(), name='user1_register'),
@@ -14,6 +15,9 @@ urlpatterns = [
 
     path('posters/', PosterAPIView.as_view(), name='poster-list'),
     path('posters/<int:pk>/', PosterAPIView.as_view(), name='poster-detail'),
+
+    path('carts/', CartAPIView.as_view(), name='cart-list'),
+    path('carts/<int:pk>/', CartAPIView.as_view(), name='cart-detail'),
 
     #path('check-promocode/', CheckPromocodeView.as_view(), name='check-promocode'),
 

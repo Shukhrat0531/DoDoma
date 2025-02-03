@@ -4,8 +4,6 @@ from .models import User1
 
 admin.site.register(User1)
 
-
-
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ('name',)
     search_fields = ('name',)
@@ -34,4 +32,7 @@ class ProductAdmin(admin.ModelAdmin):
     ordering = ('name',)
 
 admin.site.register(Product, ProductAdmin)
+
+
+admin.site.register(Cart)
 

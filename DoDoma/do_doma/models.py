@@ -80,3 +80,21 @@ class Poster(models.Model):
 
 
 
+
+class Cart(models.Model):
+    user = models.ForeignKey(User1, on_delete=models.CASCADE)
+    #siteuser = models.ForeignKey(UserSite2, on_delete=models.CASCADE,blank=True,null=True)
+    address = models.CharField(max_length=200, blank=True)
+    is_payed = models.BooleanField(default=False)
+    total_price = models.IntegerField(default=0)
+
+    order = models.TextField()
+
+    created_at = models.DateTimeField(default=datetime.now)
+    finished_at = models.DateTimeField(default=datetime.now)
+    status = models.IntegerField(default=1)  # 0 - created zakaz, -1 - otmenen, 1 - confirmed, 2 - accepted
+
+
+
+    def __str__(self):
+        return f'Cart {self.id} for {self.user.name}'
