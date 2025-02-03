@@ -1,11 +1,15 @@
 from django.urls import path
 from .views import *
+<<<<<<< HEAD
 
+=======
+>>>>>>> 274b6c11b1d54012fd32391c7427f00c53afc678
 
 urlpatterns = [
     path('register/', User1RegistrationView.as_view(), name='user1_register'),
     path('verify/', User1VerificationView.as_view(), name='user1_verify'),
     path('login/', User1LoginView.as_view(), name='user1_login'),
+    path('reset-password/', ResetPasswordAPIView.as_view(), name='reset_password'),
 
     path('categories/', CategoryAPIView.as_view(), name='category-list'),
     path('categories/<int:pk>/', CategoryAPIView.as_view(), name='category-detail'),

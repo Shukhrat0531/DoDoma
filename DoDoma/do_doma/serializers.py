@@ -1,7 +1,8 @@
 from rest_framework import serializers
-from .models import User1
+from .models import *
 from .utils import send_sms_via_smsc
 from django.utils.timezone import now
+
 
 
 class User1RegistrationSerializer(serializers.ModelSerializer):
@@ -13,7 +14,7 @@ class User1RegistrationSerializer(serializers.ModelSerializer):
         user, created = User1.objects.get_or_create(phone_number=validated_data['phone_number'])
         user.name = validated_data.get('name', user.name)
         user.generate_otp()
-        message = f"Ваш код для авторизации: {user.otp}"
+        message = f"Ваш код(пароль) для авторизации: {user.otp}"
         send_sms_via_smsc(user.phone_number, message)
         return user
 
@@ -30,6 +31,7 @@ class User1VerificationSerializer(serializers.Serializer):
             return data
         except User1.DoesNotExist:
             raise serializers.ValidationError("Номер телефона не найден")
+     
 
 
 
@@ -48,6 +50,22 @@ class User1LoginSerializer(serializers.Serializer):
         except User1.DoesNotExist:
             raise serializers.ValidationError("Пользователь с таким номером телефона не найден.")
 
+class ResetPasswordSerializer(serializers.Serializer):
+    phone_number = serializers.CharField()
+
+    def reset_password(self):
+        phone_number = self.validated_data['phone_number']
+        try:
+            user = User1.objects.get(phone_number=phone_number)
+            user.reset_password()  # Генерация нового пароля (OTP)
+
+            # Отправка SMS пользователю
+            message = f"Ваш код для сброса пароля на сайте 'DoDoma': {user.otp}"  # Используем user.otp
+            send_sms_via_smsc(user.phone_number, message)
+
+            return {"success": "Новый код для авторизации отправлен на ваш номер."}
+        except User1.DoesNotExist:
+            raise serializers.ValidationError("Номер телефона не найден.")
 
 
 class UnitSerializer(serializers.ModelSerializer):
@@ -60,7 +78,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ('id', 'category', 'name', 'description', 'image1', 'price',
+        fields = ('id', 'category', 'name', 'description', 'image', 'price',
                   'compound', 'storage', 'unit', 'country', 'discount', 'is_new')
 
     def create(self, validated_data):
